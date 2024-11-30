@@ -1,3 +1,12 @@
+/// <summary>
+/// Entry point for the ReStore API application.
+/// </summary>
+/// <remarks>
+/// This class configures services and the HTTP request pipeline for the application.
+/// It sets up controllers, Swagger/OpenAPI, Entity Framework Core with SQLite, and CORS policy.
+/// It also ensures the database is migrated and initialized at startup.
+/// </remarks>
+/// <param name="args">Command-line arguments.</param>
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +23,8 @@ builder.Services.AddDbContext<StoreContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,6 +33,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors (opt =>
+{
+    opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+});
 
 app.UseAuthorization();
 
